@@ -2,6 +2,23 @@ import { serve } from "https://deno.land/std/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js";
 import { create } from "https://deno.land/x/djwt@v2.9/mod.ts";
 
+const allowedEvents = [
+  "conversions_complete",
+  "channel_active",
+  "channel_idle",
+  "channel_created",
+  "media_available",
+  "media_created",
+  "media_deleted",
+  "media_reuploaded",
+  "media_updated",
+  "thumbnail_created",
+  "thumbnail_deleted",
+  "track_created",
+  "track_deleted"
+];
+
+
 // ================== SUPABASE ==================
 const supabase = createClient(
   Deno.env.get("PROJECT_URL")!,
@@ -212,7 +229,7 @@ serve(async (req) => {
       const media = event.data;
 
       // Only handle media events
-      if (!["media_created", "media_updated"].includes(eventType)) {
+      if (!allowedEvents.includes(eventType)) {
         return new Response(JSON.stringify({ ignored: true }), { status: 200 });
       }
 
